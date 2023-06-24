@@ -121,3 +121,6 @@ cache-clear:
 
 fresh:
 	docker-compose exec app php artisan migrate:fresh --seed
+
+api-generate:
+	php artisan openapi:generate > ./dist/openapi.json
