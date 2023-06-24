@@ -21,7 +21,7 @@ return [
                 ],
                 [
                     'url' => 'http://localhost:8000',
-                    'description' => 'Mack Server',
+                    'description' => 'Mock Server',
                     'variables' => [],
                 ],
             ],
