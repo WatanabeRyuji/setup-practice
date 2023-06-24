@@ -44,11 +44,11 @@ ps:
 
 # MySQLコンテナexec
 mysql:
-	docker exec -it nomura-ckk-mysql /bin/bash -c "mysql -uroot -ppassword nomura_ckk"
+	docker exec -it laravel-setup-practice-mysql /bin/bash -c "mysql -uroot -ppassword"
 
 # Redisコンテナexec
 redis:
-	docker exec -it nomura-ckk-redis /bin/bash -c "redis-cli"
+	docker exec -it laravel-setup-practice-redis /bin/bash -c "redis-cli"
 
 # コンテナ再起動
 restart:
@@ -99,10 +99,10 @@ analysis:
 
 ifeq ($(OS_NAME), "Linux")
 shell:
-	docker exec -it nomura-ckk-app su -s /bin/bash $(shell id -un)
+	docker exec -it laravel-setup-practice-app su -s /bin/bash $(shell id -un)
 else
 shell:
-	docker exec -it nomura-ckk-app /bin/bash
+	docker exec -it laravel-setup-practice-app /bin/bash
 endif
 
 dev:
