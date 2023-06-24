@@ -159,6 +159,7 @@ return [
         /*
          * Package Service Providers...
          */
+        Vyuldashev\LaravelOpenApi\OpenApiServiceProvider::class,
 
         /*
          * Application Service Providers...

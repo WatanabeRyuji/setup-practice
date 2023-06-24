@@ -114,3 +114,14 @@ services:
             MINIO_ROOT_PASSWORD: secret_key
         depends_on:
             - minio
+
+    openapi:
+        container_name: laravel-setup-practice-openapi
+        image: swaggerapi/swagger-ui:latest
+        tty: true
+        volumes:
+            - "./dist/:/var/openapi"
+        environment:
+            SWAGGER_JSON: /var/openapi/openapi.json
+        ports:
+            - "8080:8080"
