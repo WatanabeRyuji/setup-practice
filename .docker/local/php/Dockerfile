@@ -18,7 +18,7 @@ RUN install-php-extensions \
     decimal \
     xdebug
 
-RUN curl -sl https://deb.nodesource.com/setup_lts.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash -
 RUN apt install -y nodejs
 RUN npm install --global yarn
 
@@ -26,9 +26,9 @@ RUN npm install --global yarn
 
 RUN apt install -y fish
 
-COPY entrypoint.sh /opt/docker-entrypoint.sh
+#COPY entrypoint.sh /opt/docker-entrypoint.sh
 
-ENTRYPOINT ["/opt/docker-entrypoint.sh"]
+#ENTRYPOINT ["/opt/docker-entrypoint.sh"]
 
 WORKDIR /app
 
