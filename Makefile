@@ -95,7 +95,7 @@ format:
 	docker-compose exec app ./vendor/bin/pint
 
 analysis:
-	docker-compose exec app ./vendor/bin/phpstan analyse --memory-limit=2G
+	docker-compose exec app ./vendor/bin/phpstan analyse --error-format=checkstyle --memory-limit=-1
 
 ifeq ($(OS_NAME), "Linux")
 shell:

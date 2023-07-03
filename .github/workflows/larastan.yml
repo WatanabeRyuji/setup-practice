@@ -1,0 +1,37 @@
+name: LaraStan
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  larastan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer, cs2pr
+          coverage: none
+
+      - name: Determine composer cache directory
+        uses: ergebnis/.github/actions/composer/determine-cache-directory@1.8.0
+
+      - name: Composer install
+        env:
+          COMPOSER_MEMORY_LIMIT: -1
+        run: composer install --no-scripts --no-progress
+
+      - name: Larastan install
+        run: composer require nunomaduro/larastan:^2.0 --dev
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v29.0.3
+
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan analyse --error-format=checkstyle --memory-limit=-1
