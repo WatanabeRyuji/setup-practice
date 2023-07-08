@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\User\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+
+Route::post('/login', [LoginController::class, 'login'])->name('login');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/', function () {
+        dd(auth()->user()->name);
+    })->name('home');
 });
