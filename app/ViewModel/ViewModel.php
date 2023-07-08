@@ -4,17 +4,20 @@ namespace App\ViewModel;
 
 use Illuminate\Contracts\Support\Arrayable;
 
+/**
+ * @implements Arrayable<string, mixed>
+ */
 abstract class ViewModel implements Arrayable
 {
     /**
      * データをキーバリューのarrayに変換します
-     * @return array
+     * @return array<string, mixed>
      */
     abstract public function toMap(): array;
 
     /**
      * 再帰的にarrayに変換します
-     * @return array
+     * @return array<string, mixed>
      */
     final public function toArray(): array
     {

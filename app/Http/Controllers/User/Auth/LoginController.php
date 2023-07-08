@@ -43,7 +43,7 @@ class LoginController extends Controller
 
         /** @var LoginData $requestData */
         $requestData = $request->getData();
-        /** @var User $user */
+        /** @var ?User $user */
         $user = User::whereEmail($requestData->email)->first();
 
         if (is_null($user) || ! Hash::check($requestData->password, $user->password)) {
@@ -52,7 +52,6 @@ class LoginController extends Controller
         }
 
         $this->clearLoginAttempts($request);
-        $user->createToken(config('app.name') . '_token')->plainTextToken;
 
         return response()->json(
             new LoginViewModel(

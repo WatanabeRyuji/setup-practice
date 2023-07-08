@@ -7,9 +7,6 @@ namespace App\ViewModel\User;
 use App\DataTransferObjects\User\LoginViewModelData;
 use App\ViewModel\ViewModel;
 
-/**
- * @extends ViewModel
- */
 class LoginViewModel extends ViewModel
 {
     public function __construct(private readonly LoginViewModelData $loginViewModelData)
