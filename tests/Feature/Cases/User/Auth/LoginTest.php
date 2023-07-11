@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Cases\User\Auth;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\Feature\Cases\User\UserTestCase;
@@ -13,15 +12,9 @@ class LoginTest extends UserTestCase
 {
     use RefreshDatabase;
 
-    private readonly User $user;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create([
-            'email' => 'test@test.com',
-            'password' => bcrypt('password'),
-        ]);
     }
 
     /**
@@ -40,6 +33,8 @@ class LoginTest extends UserTestCase
                     ->where('email', $this->user->email)
                     ->has('token')
             );
+
+        $this->assertAuthenticatedAs($this->user, 'sanctum');
     }
 
     /**
@@ -57,9 +52,11 @@ class LoginTest extends UserTestCase
                 fn (AssertableJson $json) => $json->has('message')
             );
 
+        $this->assertFalse(auth()->check());
         $this->assertDatabaseMissing('personal_access_tokens', [
             'tokenable_id' => $this->user->id,
         ]);
+        $this->assertGuest('sanctum');
     }
 
     /**
@@ -77,9 +74,11 @@ class LoginTest extends UserTestCase
                 fn (AssertableJson $json) => $json->has('message')
             );
 
+        $this->assertFalse(auth()->check());
         $this->assertDatabaseMissing('personal_access_tokens', [
             'tokenable_id' => $this->user->id,
         ]);
+        $this->assertGuest('sanctum');
     }
 
     // TODO: ログインロックのテスト記入

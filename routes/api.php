@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\User\Auth\LoginController;
+use App\Http\Controllers\User\Auth\LogoutController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,4 +21,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/', function () {
         dd(auth()->user()->name);
     })->name('home');
+    Route::post('/logout', LogoutController::class)->name('logout');
 });
