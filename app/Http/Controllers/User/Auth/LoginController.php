@@ -51,6 +51,7 @@ class LoginController extends Controller
             throw new AuthenticationException('メールアドレスまたはパスワードが違います'); // 本来はlangファイルに定義する;
         }
 
+        $user->tokens()->delete();
         $this->clearLoginAttempts($request);
 
         return response()->json(
