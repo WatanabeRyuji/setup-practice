@@ -14,7 +14,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Exceptions\InvalidDataClass;
@@ -46,7 +46,7 @@ class LoginController extends Controller
         /** @var ?User $user */
         $user = User::whereEmail($requestData->email)->first();
 
-        if (is_null($user) || ! Hash::check($requestData->password, $user->password)) {
+        if (! Auth::attempt($request->toArray())) {
             $this->incrementLoginAttempts($request);
             throw new AuthenticationException('メールアドレスまたはパスワードが違います'); // 本来はlangファイルに定義する;
         }
