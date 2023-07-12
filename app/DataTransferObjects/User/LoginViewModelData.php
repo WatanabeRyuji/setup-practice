@@ -12,6 +12,7 @@ class LoginViewModelData extends Data
     public function __construct(
         public readonly User $user,
         public readonly string $token,
+        public readonly string $refreshToken,
     ) {
     }
 }

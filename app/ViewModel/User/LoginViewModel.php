@@ -22,6 +22,7 @@ class LoginViewModel extends ViewModel
             'name' => $this->loginViewModelData->user->name,
             'email' => $this->loginViewModelData->user->email,
             'token' => $this->loginViewModelData->token,
+            'refresh_token' => $this->loginViewModelData->refreshToken,
         ];
     }
 }

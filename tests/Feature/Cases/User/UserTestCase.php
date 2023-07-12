@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Cases\User;
 
+use App\Enums\TokenAbility;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -26,7 +27,7 @@ class UserTestCase extends TestCase
      */
     protected function actingAsUser(): self
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, [TokenAbility::AccessApi]);
 
         return $this;
     }
