@@ -6,6 +6,9 @@ namespace App\Enums;
 
 use BenSampo\Enum\Enum;
 
+/**
+ * @extends Enum<string>
+ */
 class TokenAbility extends Enum
 {
     public const AccessApi = 'access-api';

@@ -13,7 +13,6 @@ use App\Models\User;
 use App\ViewModel\User\LoginViewModel;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -69,12 +68,12 @@ class LoginController extends Controller
     }
 
     /**
-     * @return JsonResponse
      * @throws \Throwable
+     * @return JsonResponse
      */
     public function refresh(): JsonResponse
     {
-        /** @var Authenticatable $user */
+        /** @var User $user */
         $user = auth()->user();
         [$accessToken, $refreshToken] = DB::transaction(function () use ($user) {
             $user->tokens()->delete();
