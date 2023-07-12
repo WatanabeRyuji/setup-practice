@@ -29,9 +29,11 @@ class LoginTest extends UserTestCase
         ])
             ->assertOk()
             ->assertJson(
-                fn (AssertableJson $json) => $json->where('name', $this->user->name)
+                fn (AssertableJson $json) => $json
+                    ->where('name', $this->user->name)
                     ->where('email', $this->user->email)
                     ->has('token')
+                    ->has('refresh_token')
             );
 
         $this->assertAuthenticatedAs($this->user, 'sanctum');
