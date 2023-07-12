@@ -18,6 +18,7 @@ use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Exceptions\InvalidDataClass;
@@ -54,10 +55,14 @@ class LoginController extends Controller
             throw new AuthenticationException('メールアドレスまたはパスワードが違います'); // 本来はlangファイルに定義する;
         }
 
-        $accessToken = $user->createToken('access_token', [TokenAbility::AccessApi], CarbonImmutable::now()->addMinutes(config('sanctum.expiration')))->plainTextToken;
-        $refreshToken = $user->createToken('refresh_token', [TokenAbility::RefreshToken], CarbonImmutable::now()->addMinutes(config('rt_expiration')))->plainTextToken;
+        [$accessToken, $refreshToken] = DB::transaction(function () use ($user) {
+            $user->tokens()->delete();
+            return [
+                $user->createToken('access_token', [TokenAbility::AccessApi], CarbonImmutable::now()->addMinutes(config('sanctum.expiration')))->plainTextToken,
+                $user->createToken('refresh_token', [TokenAbility::RefreshToken], CarbonImmutable::now()->addMinutes(config('rt_expiration')))->plainTextToken,
+            ];
+        });
 
-        $user->tokens()->delete();
         $this->clearLoginAttempts($request);
 
         return response()->json(new LoginViewModel(new LoginViewModelData($user, $accessToken, $refreshToken)));
@@ -65,15 +70,19 @@ class LoginController extends Controller
 
     /**
      * @return JsonResponse
+     * @throws \Throwable
      */
     public function refresh(): JsonResponse
     {
         /** @var Authenticatable $user */
         $user = auth()->user();
-        $user->tokens()->delete();
-
-        $accessToken = $user->createToken('access_token', [TokenAbility::AccessApi], CarbonImmutable::now()->addMinutes(config('sanctum.expiration')))->plainTextToken;
-        $refreshToken = $user->createToken('refresh_token', [TokenAbility::RefreshToken], CarbonImmutable::now()->addMinutes(config('rt_expiration')))->plainTextToken;
+        [$accessToken, $refreshToken] = DB::transaction(function () use ($user) {
+            $user->tokens()->delete();
+            return [
+                $user->createToken('access_token', [TokenAbility::AccessApi], CarbonImmutable::now()->addMinutes(config('sanctum.expiration')))->plainTextToken,
+                $user->createToken('refresh_token', [TokenAbility::RefreshToken], CarbonImmutable::now()->addMinutes(config('rt_expiration')))->plainTextToken,
+            ];
+        });
 
         return response()->json(new LoginViewModel(new LoginViewModelData($user, $accessToken, $refreshToken)));
     }
