@@ -46,7 +46,9 @@ return [
     |
     */
 
-    'expiration' => 525600, // トークンの有効期限
+    'expiration' => 60, // トークンの有効期限(One hour)
+
+    'rt_expiration' => 7 * 60 * 60, // Expiration of RefreshToken 7 Days
 
     /*
     |--------------------------------------------------------------------------
