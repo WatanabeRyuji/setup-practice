@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\ViewModel\User;
 
-use App\DataTransferObjects\User\LoginViewModelData;
+use App\DataTransferObjects\Auth\LoginViewModelData;
 use App\ViewModel\ViewModel;
 
 class LoginViewModel extends ViewModel

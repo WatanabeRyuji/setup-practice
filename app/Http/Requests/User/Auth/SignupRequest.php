@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\User\Auth;
 
-use App\DataTransferObjects\Auth\LoginData;
+use App\DataTransferObjects\Auth\SignupData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\LaravelData\WithData;
 
-class LoginRequest extends FormRequest
+class SignupRequest extends FormRequest
 {
     use WithData;
 
@@ -28,8 +28,9 @@ class LoginRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'email' => __('validation.attributes.user_id'),
-            'password' => __('validation.attributes.user_id'),
+            'name' => __('user.name'),
+            'email' => __('user.email'),
+            'password' => __('user.password'),
         ];
     }
 
@@ -41,8 +42,9 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'email'],
-            'password' => ['required'], // passwordの制限によって正規表現を使う
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users'],
+            'password' => ['required', 'confirmed'], // passwordの制限によって正規表現を使う
         ];
     }
 
@@ -51,6 +53,6 @@ class LoginRequest extends FormRequest
      */
     protected function dataClass(): string
     {
-        return LoginData::class;
+        return SignupData::class;
     }
 }

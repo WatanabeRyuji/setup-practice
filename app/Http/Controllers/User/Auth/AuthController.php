@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User\Auth;
 
-use App\DataTransferObjects\User\LoginData;
-use App\DataTransferObjects\User\LoginViewModelData;
+use App\DataTransferObjects\Auth\LoginData;
+use App\DataTransferObjects\Auth\LoginViewModelData;
 use App\Enums\TokenAbility;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Auth\LoginRequest;
+use App\Http\Requests\User\Auth\SignupRequest;
 use App\Models\User;
 use App\ViewModel\User\LoginViewModel;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +24,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Exceptions\InvalidDataClass;
 
-class LoginController extends Controller
+class AuthController extends Controller
 {
     use ThrottlesLogins;
 
@@ -32,9 +34,9 @@ class LoginController extends Controller
 
     /**
      * @param LoginRequest $request
-     * @throws AuthenticationException
      * @throws ValidationException
-     * @throws InvalidDataClass
+     * @throws InvalidDataClass|\Throwable
+     * @throws AuthenticationException
      * @return JsonResponse
      */
     public function login(LoginRequest $request): JsonResponse
@@ -48,6 +50,7 @@ class LoginController extends Controller
         $requestData = $request->getData();
         /** @var ?User $user */
         $user = User::whereEmail($requestData->email)->first();
+        //TODO: email_verified_atはどうするか考える
 
         if (! Auth::attempt($request->toArray())) {
             $this->incrementLoginAttempts($request);
@@ -75,6 +78,7 @@ class LoginController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
+        //TODO: email_verified_atはどうするか考える
         [$accessToken, $refreshToken] = DB::transaction(function () use ($user) {
             $user->tokens()->delete();
             return [
@@ -92,5 +96,39 @@ class LoginController extends Controller
     protected function throttleKey(Request $request): string
     {
         return Str::lower($request->input('email')) . '|' . $request->ip();
+    }
+
+    /**
+     * @param SignupRequest $request
+     * @throws InvalidDataClass
+     * @throws \Throwable
+     * @return JsonResponse
+     */
+    public function register(SignupRequest $request): JsonResponse
+    {
+        $data = $request->getData();
+        [$user, $accessToken, $refreshToken] = DB::transaction(function () use ($data) {
+            $user = User::create($data->toArray());
+            Auth::attempt($data->toArray());
+            //TODO: email_verified_atはどうするか考える
+            //            event(new Registered($user));
+            return [
+                $user,
+                $user->createToken('access_token', [TokenAbility::AccessApi], CarbonImmutable::now()->addMinutes(config('sanctum.expiration')))->plainTextToken,
+                $user->createToken('refresh_token', [TokenAbility::RefreshToken], CarbonImmutable::now()->addMinutes(config('rt_expiration')))->plainTextToken,
+            ];
+        });
+
+        return response()->json(new LoginViewModel(new LoginViewModelData($user, $accessToken, $refreshToken)));
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function logout(): JsonResponse
+    {
+        auth()->user()?->tokens()->delete();
+
+        return response()->json();
     }
 }
