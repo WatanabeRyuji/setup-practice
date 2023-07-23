@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Cases\User\Auth;
+namespace Tests\Feature\Cases\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -23,7 +23,7 @@ class LoginTest extends UserTestCase
      */
     public function test_can_login_with_valid_data(): void
     {
-        $this->postJson(route('api.login'), [
+        $this->postJson(route('api.auth.login'), [
             'email' => 'test@test.com',
             'password' => 'password',
         ])
@@ -45,7 +45,7 @@ class LoginTest extends UserTestCase
      */
     public function test_can_not_login_with_wrong_email(): void
     {
-        $this->postJson(route('api.login'), [
+        $this->postJson(route('api.auth.login'), [
             'email' => 'wrong@wrong.com',
             'password' => 'password',
         ])

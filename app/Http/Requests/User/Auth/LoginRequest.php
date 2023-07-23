@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\User\Auth;
 
-use App\DataTransferObjects\User\LoginData;
+use App\DataTransferObjects\Auth\LoginData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\LaravelData\WithData;
 

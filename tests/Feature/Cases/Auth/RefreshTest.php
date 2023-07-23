@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Cases\User\Auth;
+namespace Tests\Feature\Cases\Auth;
 
 use App\Enums\TokenAbility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,7 +15,7 @@ class RefreshTest extends UserTestCase
     {
         Sanctum::actingAs($this->user, [TokenAbility::RefreshToken]);
 
-        $this->postJson(route('api.refresh_token'))
+        $this->postJson(route('api.auth.refresh_token'))
             ->assertOk()
             ->assertJson(
                 fn ($json) => $json
@@ -29,7 +29,7 @@ class RefreshTest extends UserTestCase
     public function test_can_not_refresh_access_token_with_send_access_token(): void
     {
         $this->actingAsUser()
-            ->postJson(route('api.refresh_token'))
+            ->postJson(route('api.auth.refresh_token'))
             ->assertForbidden();
     }
 }
