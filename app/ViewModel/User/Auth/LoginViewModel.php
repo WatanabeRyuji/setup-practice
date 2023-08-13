@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\ViewModel\User;
+namespace App\ViewModel\User\Auth;
 
 use App\DataTransferObjects\Auth\LoginViewModelData;
 use App\ViewModel\ViewModel;
