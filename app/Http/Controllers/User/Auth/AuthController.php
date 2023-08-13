@@ -8,18 +8,22 @@ use App\DataTransferObjects\Auth\LoginData;
 use App\DataTransferObjects\Auth\LoginViewModelData;
 use App\Enums\TokenAbility;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\Auth\ForgotPasswordRequest;
 use App\Http\Requests\User\Auth\LoginRequest;
+use App\Http\Requests\User\Auth\ResetPasswordRequest;
 use App\Http\Requests\User\Auth\SignupRequest;
 use App\Models\User;
-use App\ViewModel\User\LoginViewModel;
+use App\ViewModel\User\Auth\ForgotPasswordViewModel;
+use App\ViewModel\User\Auth\LoginViewModel;
+use App\ViewModel\User\Auth\ResetPasswordViewModel;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Exceptions\InvalidDataClass;
@@ -130,5 +134,43 @@ class AuthController extends Controller
         auth()->user()?->tokens()->delete();
 
         return response()->json();
+    }
+
+    /**
+     * @param ForgotPasswordRequest $request
+     * @throws InvalidDataClass
+     * @return JsonResponse
+     */
+    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
+    {
+        // カスタムなどをしたい場合は参照: https://readouble.com/laravel/10.x/ja/passwords.html
+        $status = Password::sendResetLink($request->getData()->toArray());
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return response()->json(new ForgotPasswordViewModel(__($status)));
+        }
+
+        return response()->json(['message' => __($status)], 500); // 仮
+    }
+
+    /**
+     * @param ResetPasswordRequest $request
+     * @throws InvalidDataClass
+     * @return JsonResponse
+     */
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
+    {
+        $status = Password::reset(
+            $request->getData()->toArray(),
+            static function (User $user, string $password) {
+                $user->update(['password' => \Hash::make($password)]);
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return response()->json(new ResetPasswordViewModel(__($status)));
+        }
+
+        return response()->json(['message' => __($status)], 500); // 仮
     }
 }
