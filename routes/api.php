@@ -16,10 +16,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
-Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
-Route::post('/auth/refresh-token', [AuthController::class, 'refresh'])->name('auth.refresh_token')
-    ->middleware(['auth:sanctum', 'ability:'.TokenAbility::RefreshToken]);
+Route::middleware('guest')->group(function () {
+    Route::prefix('/auth')->name('auth.')->group(function () {
+        Route::post('/login', [AuthController::class, 'login'])->name('login');
+        Route::post('/register', [AuthController::class, 'register'])->name('register');
+        Route::post('/refresh-token', [AuthController::class, 'refresh'])->name('refresh_token')
+            ->middleware(['auth:sanctum', 'ability:'.TokenAbility::RefreshToken]);
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot_password');
+        Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('reset_password');
+    });
+});
 
 Route::middleware(['auth:sanctum', 'ability:'.TokenAbility::AccessApi])->group(function () {
     Route::prefix('/auth')->name('auth.')->group(function () {
